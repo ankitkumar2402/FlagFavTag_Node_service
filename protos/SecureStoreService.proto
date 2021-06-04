@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package com.sap.crm.securestoreserviceproto;
+
+option java_package = "com.sap.crm.securestoreserviceproto";
+option java_outer_classname = "SecureStoreServiceProto";
+
+
+service SecureStoreService {
+
+    //
+    rpc GetSecret(GetSecretRequest) returns (GetSecretResponse);
+
+    rpc PutSecret(PutSecretRequest) returns (PutSecretResponse);
+
+    rpc GetServiceNameFromPrefix(GetServiceNameFromPrefixRequest) returns (GetServiceNameFromPrefixResponse);
+
+    rpc GetSystemSecret(GetSystemSecretRequest) returns (GetSystemSecretResponse);
+
+    rpc PutSystemSecret(PutSystemSecretRequest) returns (PutSystemSecretResponse);
+}
+
+
+message GetSecretRequest {
+    string service_account_token = 1;
+    string tenant_id = 2;
+    string secret_key = 3;
+}
+
+message GetSecretResponse {
+    bool success = 1;
+    string secret_value = 2;
+}
+
+message PutSecretRequest {
+    string service_account_token = 1;
+    string tenant_id = 2;
+    string secret_key = 3;
+    string secret_value = 4;
+}
+
+message PutSecretResponse {
+    bool success = 1;
+}
+
+message GetServiceNameFromPrefixRequest {
+    string prefix = 1;
+}
+
+message GetServiceNameFromPrefixResponse {
+    bool success = 1;
+    string service_name = 2;
+}
+
+message GetSystemSecretRequest {
+    string service_account_token = 1;
+    string secret_key = 2;
+}
+
+message GetSystemSecretResponse {
+    bool success = 1;
+    string secret_value = 2;
+}
+
+message PutSystemSecretRequest {
+    string service_account_token = 1;
+    string secret_key = 2;
+    string secret_value = 3;
+}
+
+message PutSystemSecretResponse {
+    bool success = 1;
+}

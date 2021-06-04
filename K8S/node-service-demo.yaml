@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion:  ambassador/v1
+      kind:  Mapping
+      prefix: /nodee
+      rewrite: ""
+      name: nodee_svc_mapping
+      service: node-service-demo-svc:8080
+      tls: istio-upstream
+      timeout_ms: 90000
+      add_response_headers:
+        Strict-Transport-Security: max-age=63072000; includeSubDomains
+        Content-Security-Policy: default-src 'self' *.cxm-salescloud.com *.webapi.amap.com *.maps.googleapis.com *.hana.ondemand.com; style-src 'self' 'unsafe-inline' *.cxm-salescloud.com *.webapi.amap.com *.maps.googleapis.com *.hana.ondemand.com; img-src 'self' *.cxm-salescloud.com *.webapi.amap.com *.maps.googleapis.com *.hana.ondemand.com
+      cors:
+        origins: "*"
+        methods: POST, GET, OPTIONS, PUT, DELETE
+        headers: Content-Type, x-sap-crm-token, x-csrf-token, location
+        exposed_headers: location
+        max_age: "86400"
+
+  name: node-service-demo-svc
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 4242
+  selector:
+    app: node-service-demo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-service-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-service-demo
+  template:
+    metadata:
+      labels:
+        app: node-service-demo
+    spec:
+      containers:
+        - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/node-service-demo
+          name: node-service-demo
+          ports:
+            - containerPort: 4242
+          env:
+            - name: SECURESTORE_SERVICE_URL
+              value: securestore-svc:50051
+      imagePullSecrets:
+        - name: cxm-dev

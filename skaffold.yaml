@@ -1,0 +1,13 @@
+apiVersion: skaffold/v2beta14
+kind: Config
+metadata:
+  name: nodee
+build:
+  artifacts:
+  - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/node-service-demo
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - K8S/node-service-demo.yaml
