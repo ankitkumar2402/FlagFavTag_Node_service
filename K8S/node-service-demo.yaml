@@ -6,10 +6,10 @@ metadata:
       ---
       apiVersion:  ambassador/v1
       kind:  Mapping
-      prefix: /nodee
-      rewrite: ""
-      name: nodee_svc_mapping
-      service: node-service-demo-svc:8080
+      prefix: /flagfavtag
+      rewrite: "/flagfavtag"
+      name: flagfavtag_svc_mapping
+      service: flagfavtag-svc:8080
       tls: istio-upstream
       timeout_ms: 90000
       add_response_headers:
@@ -22,33 +22,33 @@ metadata:
         exposed_headers: location
         max_age: "86400"
 
-  name: node-service-demo-svc
+  name: flagfavtag-svc
 spec:
   ports:
     - name: http
       port: 8080
       targetPort: 4242
   selector:
-    app: node-service-demo
+    app: flagfavtag
   type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-service-demo
+  name: flagfavtag
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: node-service-demo
+      app: flagfavtag
   template:
     metadata:
       labels:
-        app: node-service-demo
+        app: flagfavtag
     spec:
       containers:
-        - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/node-service-demo
-          name: node-service-demo
+        - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/flagfavtag
+          name: flagfavtag
           ports:
             - containerPort: 4242
           env:

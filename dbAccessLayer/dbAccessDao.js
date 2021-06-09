@@ -11,7 +11,7 @@ function dbAccessDao(){
 	const app = express();
 	this.createCollectionWithSchema = createSchema;
 
-	this.connectDb = async function(dbName, dbCollection){
+	this.connectDb = async function(dbName, dbCollection, uri){
 		this._dbName = dbName;
 		this._dbCollection = dbCollection;
 		try {
@@ -21,7 +21,6 @@ function dbAccessDao(){
 				useUnifiedTopology: true 
 			};
 			
-			const uri = await config.getMongoDbUri(this._dbName);
 			return new Promise(function(resolve, reject){
 				console.log("5.........." + Date.now());
 				MongoClient.connect(uri, options, function(oError, db){

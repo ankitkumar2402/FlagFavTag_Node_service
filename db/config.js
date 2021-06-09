@@ -2,7 +2,7 @@ const env = require('../Environment');
 // const Factory = require('../secureStore/SecureStoreServiceFactory');
 const Factory = require('../secureStore/SecureStoreHandling');
 
- async function getMongoDbUri(dbName) {
+ async function getMongoDbUri(dbName, secureStoreServiceCredentials) {
 	if (env.isIntegrationTest()) {
 		return env.getIntegrationTestMongodbURI() + '/' + dbName;
 	}
@@ -11,13 +11,11 @@ const Factory = require('../secureStore/SecureStoreHandling');
 
 		if(!this.oValue){
 			try {
-				const secureStoreService = await Factory.getSystemSecretKeyFromSecureCtore().catch(function(err){
-					console.log(err);
-				});
-				if (secureStoreService) {
-					console.log("secureStoreService : " + JSON.stringify(secureStoreService));
+				//const secureStoreService = await Factory.getSystemSecretKeyFromSecureStore();
+				if (secureStoreServiceCredentials) {
+					console.log("secureStoreService : " + JSON.stringify(secureStoreServiceCredentials));
 					//const oValue = await secureStoreService.getSystemSecret(secretKey);
-					this.oValue = JSON.parse(oValue.secret_value);
+					this.oValue = JSON.parse(secureStoreServiceCredentials.secret_value);
 				}
 			} catch (e) {
 				console.log(`error fetching mongodb credentails from securestore service`, e);

@@ -1,18 +1,53 @@
-let router = require('express').Router();
+const config = require('../db/config');
 const {dbAccessDao} = require('../dbAccessLayer/dbAccessDao');
 const { DB_NAME, DB_COLLECTION } = require('../db/Constants');
-const querystring = require('querystring');
+const Factory = require('../secureStore/SecureStoreHandling');
 
 
-function RouterHandle(){
+async function RouterHandle(router){
+    this.oDbAccessDao = null;
     this.MongoDbAccessDao = null;
     let that= this;
-    this.oDbAccessDao = new dbAccessDao();
-    this.oDbAccessDao.connectDb(DB_NAME, DB_COLLECTION).then(function(db){
-        this.MongoDbAccess = db;
-    });
-    //get All Flags, Favorites, tags data 
+    let uri = "";
+
+    async function getMongoUri(){
+        try{
+            //Get credentials from secure store for mongo connection
+            let secureStoreServiceCredentials = await Factory.getSystemSecretKeyFromSecureStore();
+    
+            //generate the Mongo Db url using secureStoreServiceCredentials
+             uri = await config.getMongoDbUri(DB_NAME, secureStoreServiceCredentials);
+             console.log("Mongo uri formed: "+ uri);
+        } catch(e){
+            console.log("Mongo uri failed: "+ e);
+        }
+        
+       this.oDbAccessDao = new dbAccessDao();
+       try{
+        this.MongoDbAccess =  await this.oDbAccessDao.connectDb(DB_NAME, DB_COLLECTION, uri);
+       } catch(e){
+        console.log("dbAccess failed" + e);
+       }
+    };
+
+    //getMongoUri.bind(this);
+    setTimeout(getMongoUri.bind(this), 10000);
+    
+
     router.get('/', function(req, res){
+        //getMongoUri();
+        if(that.oDbAccessDao && that.MongoDbAccess){
+            res.status = 200;
+            res.json({
+                status: '200',
+                data: "connection succesful"
+            });
+        }
+        
+    });
+
+    //get All Flags, Favorites, tags data 
+    router.get('/all', function(req, res){
         let query = null;
         if(req.query && req.query.username){
             query = {
@@ -62,4 +97,4 @@ function RouterHandle(){
 //getPrivateTags
 //getFavorites
 //getFlagFavTag/Id
-module.exports = {router, RouterHandle};
+module.exports = {RouterHandle};

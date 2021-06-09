@@ -1,10 +1,10 @@
 apiVersion: skaffold/v2beta14
 kind: Config
 metadata:
-  name: nodee
+  name: flagfavtag
 build:
   artifacts:
-  - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/node-service-demo
+  - image: cxm-dev.docker.repositories.sap.ondemand.com/cxm/flagfavtag
     docker:
       dockerfile: Dockerfile
 deploy:
